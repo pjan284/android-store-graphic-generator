@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Android Store Graphic Generator</title>
+	
+	<!-- jQuery -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+	
+	<!-- Bootstrap -->
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+	
+	<!-- Optional theme -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+	
+	<!-- Latest compiled and minified JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+	
+	<!-- WebFontLoader -->
+	<script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.16/webfont.js"></script>
+	
+	<link rel="stylesheet" href="css/style.css">
+	<script type="text/javascript" src="js/script.js"></script>
+	
+	<script>
+		WebFont.load({
+			google: {
+				families: ['Droid Sans', 'Droid Serif', 'Comfortaa']
+			}
+		});
+		
+		$(document).ready(function() {
+			loadFrames();
+		});
+	</script>
+</head>
+<body>
+	<div class="container">
+		<div class="row">
+			<div class="col-md-6">
+				<div class="row">
+					<div class="col-md-6">
+						<form role="form">
+							<div class="form-group">
+								<label for="screen-file" class="btn btn-primary">Upload Screenshot</label>
+								<input id="screen-file" class="hidden" type="file" accept="image/*">
+							</div>
+						</form>
+					</div>
+					<div class="col-md-6">
+						<a id="download" class="btn btn-primary right" target="_blank">Download Result</a>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-12">
+						<div id="container">
+							<canvas id="canvas" />
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-2">
+				<form role="form">
+					<h2>Background</h2>
+					<div class="form-group">
+						<label for="canvas-size">Size</label>
+						<select id="canvas-size">
+							<option value="480x800">480x800</option>
+							<option value="480x854">480x854</option>
+							<option value="600x1024">600x1024</option>
+							<option value="800x1280">800x1280</option>
+							<option value="720x1280">720x1280</option>
+							<option value="768x1280">768x1280</option>
+							<option value="1080x1920" selected>1080x1920</option>
+							<option value="1600x2560">1600x2560</option>
+						</select>
+					</div>
+					<div class="form-group">
+						<label for="background-color">Color</label>
+						<input id="background-color" value="#FFDD33" type="color" />
+					</div>
+				</form>
+			</div>
+			<div class="col-md-2">
+				<form role="form">
+					<h2>Frame</h2>
+					<div class="form-group">
+						<label for="frame-device">Device</label>
+						<select id="frame-device"></select>
+					</div>
+					<div class="form-group">
+						<label for="frame-position">Position</label>
+						<input id="frame-position" value="0.2" min="0" max="1" step="0.01" type="range" />
+					</div>
+					<div class="form-group">
+						<label for="frame-scale">Scale</label>
+						<input id="frame-scale" value="1.0" min="0.0" max="3" step="0.01" type="range" />
+					</div>
+				</form>
+			</div>
+			<div class="col-md-2">
+				<form role="form">
+					<h2>Text</h2>
+					<div class="form-group">
+						<label for="text">Text</label>
+						<!--<input id="text" value="" type="text" />-->
+						<textarea rows="2" id="text">Great App!</textarea>
+					</div>
+					<div class="form-group">
+						<label for="text-color">Color</label>
+						<input id="text-color" value="#118C4E" type="color" />
+					</div>
+					<div class="form-group">
+						<label for="text-font">Font</label>
+						<select id="text-font">
+							<optgroup label="General">
+								<option value="sans-serif" selected="selected">Sans-serif</option>
+								<option value="serif">Serif</option>
+								<option value="monospace">Monospace</option>
+							</optgroup>
+							<optgroup label="Google">
+								<option value="Droid Sans">Droid Sans</option>
+								<option value="Droid Serif">Droid Serif</option>
+								<option value="Comfortaa">Comfortaa</option>
+							</optgroup>
+						</select>
+					</div>
+					<div class="form-group">
+						<label for="text-size">Size</label>
+						<input id="text-size" value="130" min="1" max="300" step="1" type="range" />
+					</div>
+					<div class="form-group">
+						<label for="text-interline">Interline</label>
+						<input id="text-interline" value="1.2" min="0.5" max="3" step="0.01" type="range" />
+					</div>
+					<div class="form-group">
+						<label for="text-position">Position</label>
+						<input id="text-position" value="0.1" min="0" max="1" step="0.01" type="range" />
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

@@ -1,0 +1,44 @@
+{
+	"frames": {
+		"nexus_4": {
+			"src": "frames/nexus_4/port_back.png",
+			"name": "Nexus 4",
+			"screen": {
+				"x": 94,
+				"y": 187,
+				"width": 768,
+				"height": 1280
+			}
+		},
+		"nexus_5": {
+			"src": "frames/nexus_5/port_back.png",
+			"name": "Nexus 5",
+			"screen": {
+				"x": 144,
+				"y": 195,
+				"width": 1080,
+				"height": 1920
+			}
+		},
+		"nexus_6": {
+			"src": "frames/nexus_6/port_back.png",
+			"name": "Nexus 6",
+			"screen": {
+				"x": 229,
+				"y": 239,
+				"width": 1440,
+				"height": 2560
+			}
+		},
+		"nexus_7": {
+			"src": "frames/nexus_7/port_back.png",
+			"name": "Nexus 7",
+			"screen": {
+				"x": 142,
+				"y": 190,
+				"width": 800,
+				"height": 1280
+			}
+		}
+	}
+}
