@@ -30,7 +30,6 @@ function drawPhone(canvas, context) {
 		frameHeight * scale
 	);
 	
-	
 	if(config.screen.image != undefined) {
 		context.drawImage(
 			config.screen.image,
@@ -65,6 +64,8 @@ function onUpdateCanvas() {
 	var dimm = $('#canvas-size').val();
 	var dimms = dimm.split('x');
 	updateCanvas(dimms[0], dimms[1]);
+	
+	config.canvas.size = dimm;
 }
 
 function updateCanvas(width, height) {
@@ -85,13 +86,16 @@ function updateCanvas(width, height) {
 function onChangeFrame() {
 	var device = $('#frame-device').val();
 	
+	changeFrame(device);
+}
+
+function changeFrame(device) {
 	var frame = frames[device];
-	
 	
 	loadImage(frame.src, function(image) {
 		config.frame.screen = frame.screen;
 		config.frame.image = image;
-		
+		config.frame.device = device;
 		draw();
 	});
 }
@@ -100,11 +104,17 @@ function onChangeScreen() {
 	var file = $('#screen-file')[0].files[0];
 	
 	if (file != undefined) {
-		var src = URL.createObjectURL(file);
-		loadImage(src, function(image) {
-			config.screen.image = image;
-			draw();
-		});
+		//var src = URL.createObjectURL(file);
+		var fileReader = new FileReader();
+		fileReader.onload = function(fileLoadedEvent) {
+			var srcData = fileLoadedEvent.target.result;
+			
+			loadScreenImage(srcData, function() {
+				draw();
+			});
+		}
+		
+		fileReader.readAsDataURL(file);
 	}
 }
 
@@ -116,7 +126,17 @@ function loadImage(src, onSuccess) {
 	}
 }
 
-function loadFrames() {
+function loadScreenImage(srcData, onSuccess) {
+	loadImage(srcData, function(image) {
+		config.screen.image = image;
+		config.screen.image.toJSON = function() {
+			return srcData;
+		}
+		onSuccess();
+	});
+}
+
+function loadFrames(onSuccess) {
 	$.getJSON('frames/frames.json', function(data) {
 		frames = data.frames;
 		
@@ -130,16 +150,53 @@ function loadFrames() {
 		
 		select.find('option').eq(0).attr('selected', 'selected');
 		
-		loadConfig();
+		onSuccess();
 		
-		appendListeners();
 	}).fail(function(jqxhr, textStatus, error) {
 		var err = textStatus + ", " + error;
 		console.log( "Request Failed: " + err );
 	});
 }
 
-function loadConfig() {
+function loadConfig(json) {
+	config = JSON.parse(json);
+	
+	loadFrames(function() {
+		syncConfig(config);
+		
+		if(config.screen.image) {
+			loadScreenImage(config.screen.image, function() {
+				onUpdateCanvas();
+				onChangeFrame();
+				appendListeners();
+			});
+		} else {
+			onUpdateCanvas();
+			onChangeFrame();
+			appendListeners();
+		}
+	});
+}
+
+function loadDefaults() {
+	config = makeConfig();
+	
+	loadFrames(function() {
+		config.frame.device = $('#frame-device').val();
+		
+		onUpdateCanvas();
+		onChangeFrame();
+		onChangeScreen();
+		
+		appendListeners();
+	});
+}
+
+function makeConfig() {
+	var config = {};
+	
+	config.canvas = {};
+	
 	config.background = {};
 	config.background.color = $('#background-color').val();
 	
@@ -155,12 +212,28 @@ function loadConfig() {
 	config.frame.screen = {};
 	config.frame.position = $('#frame-position').val();
 	config.frame.scale = $('#frame-scale').val();
+	config.frame.device = "";
 	
 	config.screen = {};
 	
-	onUpdateCanvas();
-	onChangeFrame();
-	onChangeScreen();
+	return config;
+}
+
+function syncConfig(config) {
+	var dimm = $('#canvas-size').val(config.canvas.size);
+	
+	$('#background-color').val(config.background.color);
+	
+	$('#text').val(config.text.text);
+	$('#text-position').val(config.text.position);
+	$('#text-color').val(config.text.color);
+	$('#text-font').val(config.text.font);
+	$('#text-size').val(config.text.size);
+	$('#text-interline').val(config.text.interline);
+	
+	$('#frame-position').val(config.frame.position);
+	$('#frame-scale').val(config.frame.scale);
+	$('#frame-device').val(config.frame.device);
 }
 
 function appendListeners() {
@@ -229,7 +302,28 @@ function appendListeners() {
 	
 	$('#download').click(function() {
 		var canvas = $('#canvas')[0];
-		var dt = canvas.toDataURL('image/png');
-		this.href = dt;
+		var data = canvas.toDataURL('image/png');
+		var win = window.open(data, '_blank');
+		win.focus();
+	});
+	
+	$('#link').click(function() {
+		var json = JSON.stringify(config);
+		var protocol = location.protocol;
+		var url;
+		if(protocol == "file:") {
+			url = protocol + "//" + location.pathname + "#" + encodeURIComponent(json);
+		} else {
+			url = location.origin + location.pathname + "#" + encodeURIComponent(json);
+		}
+		$('#link-url').val(url);
+		$('#link-url').focus();
+		$(this).hide();
+		$('#link-url').show();
+	});
+	
+	$('#link-url').blur(function() {
+		$(this).hide();
+		$('#link').show();
 	});
 }

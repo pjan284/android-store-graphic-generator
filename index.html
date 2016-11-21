@@ -33,7 +33,11 @@
 		});
 		
 		$(document).ready(function() {
-			loadFrames();
+			if(location.hash != "") {
+				loadConfig(decodeURIComponent(location.hash).substring(1));
+			} else {
+				loadDefaults();
+			}
 		});
 	</script>
 </head>
@@ -42,7 +46,7 @@
 		<div class="row">
 			<div class="col-md-6">
 				<div class="row">
-					<div class="col-md-6">
+					<div class="col-md-4">
 						<form role="form">
 							<div class="form-group">
 								<label for="screen-file" class="btn btn-primary">Upload Screenshot</label>
@@ -50,7 +54,11 @@
 							</div>
 						</form>
 					</div>
-					<div class="col-md-6">
+					<div class="col-md-4 text-center">
+						<a id="link" class="btn btn-primary">Link Result</a>
+						<input id="link-url" style="display: none;" />
+					</div>
+					<div class="col-md-4">
 						<a id="download" class="btn btn-primary right" target="_blank">Download Result</a>
 					</div>
 				</div>
