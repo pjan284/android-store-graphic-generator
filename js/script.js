@@ -13,7 +13,9 @@ function draw() {
 	
 	drawPhone(canvas, context);
 	
-	drawText(canvas, context);
+	config.texts.forEach(function(textConfig) {
+		drawText(canvas, context, textConfig);
+	});
 }
 
 function drawPhone(canvas, context) {
@@ -41,22 +43,22 @@ function drawPhone(canvas, context) {
 	}
 }
 
-function drawText(canvas, context) {
-	context.fillStyle = config.text.color;
+function drawText(canvas, context, textConfig) {
+	context.fillStyle = textConfig.color;
 	context.textAlign = "center";
 	context.textBaseline = 'middle';
 
-	context.font=""+config.text.size+"px "+config.text.font;
+	context.font=""+textConfig.size+"px "+textConfig.font;
 	
 	var centerX = canvas.width / 2;
-	var lineY = canvas.height * config.text.position;
+	var lineY = canvas.height * textConfig.position;
 	
-	var lines = config.text.text.split("\n");
+	var lines = textConfig.text.split("\n");
 	
 	for (var i = 0; i < lines.length; i++) {
 		var line = lines[i];
 		context.fillText(line, centerX, lineY);
-		lineY += config.text.size * config.text.interline;
+		lineY += textConfig.size * textConfig.interline;
 	}
 }
 
@@ -200,14 +202,19 @@ function makeConfig() {
 	config.background = {};
 	config.background.color = $('#background-color').val();
 	
-	config.text = {};
-	config.text.text = $('#text').val();
-	config.text.position = $('#text-position').val();
-	config.text.color = $('#text-color').val();
-	config.text.font = $('#text-font').val();
-	config.text.size = $('#text-size').val();
-	config.text.interline = $('#text-interline').val();
-	
+	config.texts = [];
+	$('form.text-form').each(function() {
+		var textConfig = {};
+		var idx = $(this).attr('data-idx');
+		var form  = $(this);
+		textConfig.text = form.find('textarea.text-text').val();
+		textConfig.position = form.find('input.text-position').val();
+		textConfig.color = form.find('input.text-color').val();
+		textConfig.font = form.find('select.text-font').val();
+		textConfig.size = form.find('input.text-size').val();
+		textConfig.interline = form.find('input.text-interline').val();
+		config.texts[idx] = textConfig;
+	});
 	config.frame = {};
 	config.frame.screen = {};
 	config.frame.position = $('#frame-position').val();
@@ -224,31 +231,36 @@ function syncConfig(config) {
 	
 	$('#background-color').val(config.background.color);
 	
-	$('#text').val(config.text.text);
-	$('#text-position').val(config.text.position);
-	$('#text-color').val(config.text.color);
-	$('#text-font').val(config.text.font);
-	$('#text-size').val(config.text.size);
-	$('#text-interline').val(config.text.interline);
-	
+	config.texts.forEach(function(textConfig, index) {
+		var form = $('form.text-form[data-idx=' + index + ']').first();
+		form.find('textarea.text-text').val(textConfig.text);
+		form.find('input.text-position').val(textConfig.position);
+		form.find('input.text-color').val(textConfig.color);
+		form.find('select.text-font').val(textConfig.font);
+		form.find('input.text-size').val(textConfig.size);
+		form.find('input.text-interline').val(textConfig.interline);
+	});
 	$('#frame-position').val(config.frame.position);
 	$('#frame-scale').val(config.frame.scale);
 	$('#frame-device').val(config.frame.device);
 }
 
 function appendListeners() {
-	$('#text-size').on("change mousemove", function() {
-		config.text.size = $(this).val();
+	$('input.text-size').on("change mousemove", function() {
+		var idx = parseInt($(this).parents('form.text-form').attr('data-idx'));
+		config.texts[idx].size = $(this).val();
 		draw();
 	});
 	
-	$('#text-interline').on("change mousemove", function() {
-		config.text.interline = $(this).val();
+	$('input.text-interline').on("change mousemove", function() {
+		var idx = parseInt($(this).parents('form.text-form').attr('data-idx'));
+		config.texts[idx].interline = $(this).val();
 		draw();
 	});
 	
-	$('#text-position').on("change mousemove", function() {
-		config.text.position = $(this).val();
+	$('input.text-position').on("change mousemove", function() {
+		var idx = parseInt($(this).parents('form.text-form').attr('data-idx'));
+		config.texts[idx].position = $(this).val();
 		draw();
 	});
 	
@@ -262,8 +274,9 @@ function appendListeners() {
 		draw();
 	});
 	
-	$('#text-color').change(function() {
-		config.text.color = $(this).val();
+	$('input.text-color').change(function() {
+		var idx = parseInt($(this).parents('form.text-form').attr('data-idx'));
+		config.texts[idx].color = $(this).val();
 		draw();
 	});
 	
@@ -272,8 +285,9 @@ function appendListeners() {
 		draw();
 	});
 	
-	$('#text-font').change(function() {
-		config.text.font = $(this).val();
+	$('select.text-font').change(function() {
+		var idx = parseInt($(this).parents('form.text-form').attr('data-idx'));
+		config.texts[idx].font = $(this).val();
 		draw();
 	});
 	
@@ -290,8 +304,9 @@ function appendListeners() {
 		onChangeFrame();
 	});
 	
-	$('#text').keyup(function() {
-		config.text.text = $(this).val();
+	$('textarea.text-text').keyup(function() {
+		var idx = parseInt($(this).parents('form.text-form').attr('data-idx'));
+		config.texts[idx].text = $(this).val();
 		draw();
 	});
 	

@@ -18,3 +18,7 @@ input[type=range]::-moz-range-track {
 .right {
 	float: right;
 }
+
+textarea.text-text {
+	width: 100%;
+}
