@@ -22,12 +22,15 @@ function drawPhone(canvas, context) {
 	
 	var frameWidth = config.frame.image.width;
 	var frameHeight = config.frame.image.height;
-	var scale = config.frame.scale;
+	var scale = config.frame.scale * canvas.height / frameHeight;
+	
+	var x = (canvas.width - frameWidth * scale) * 0.5;
+	var y = config.frame.position * canvas.height - frameHeight * scale * 0.5;
 	
 	context.drawImage(
 		config.frame.image,
-		(canvas.width - frameWidth * scale) / 2,
-		config.frame.position * canvas.height,
+		x,
+		y,
 		frameWidth * scale,
 		frameHeight * scale
 	);
@@ -35,8 +38,8 @@ function drawPhone(canvas, context) {
 	if(config.screen.image != undefined) {
 		context.drawImage(
 			config.screen.image,
-			(canvas.width - frameWidth * scale) / 2 + config.frame.screen.x * scale,
-			config.frame.position * canvas.height + config.frame.screen.y * scale,
+			x + config.frame.screen.x * scale,
+			y + config.frame.screen.y * scale,
 			config.frame.screen.width * scale,
 			config.frame.screen.height * scale
 		);
@@ -48,9 +51,11 @@ function drawText(canvas, context, textConfig) {
 	context.textAlign = "center";
 	context.textBaseline = 'middle';
 
-	context.font=""+textConfig.size+"px "+textConfig.font;
+	var textSize = textConfig.size * canvas.height;
 	
-	var centerX = canvas.width / 2;
+	context.font=""+textSize+"px "+textConfig.font;
+	
+	var centerX = canvas.width * 0.5;
 	var lineY = canvas.height * textConfig.position;
 	
 	var lines = textConfig.text.split("\n");
@@ -58,7 +63,7 @@ function drawText(canvas, context, textConfig) {
 	for (var i = 0; i < lines.length; i++) {
 		var line = lines[i];
 		context.fillText(line, centerX, lineY);
-		lineY += textConfig.size * textConfig.interline;
+		lineY += textSize * textConfig.interline;
 	}
 }
 
@@ -196,6 +201,8 @@ function loadDefaults() {
 
 function makeConfig() {
 	var config = {};
+	
+	config.version = 1;
 	
 	config.canvas = {};
 	
